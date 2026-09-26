@@ -345,18 +345,20 @@ export const FACING_OPTIONS = [
 ];
 
 /**
- * Theme Management (Light mode default, Dark mode optional)
+ * Theme Management (Dark mode default, Light mode optional)
  */
 export function getStoredTheme() {
-  return localStorage.getItem('plotway_theme') || 'light';
+  return localStorage.getItem('plotway_theme') || 'dark';
 }
 
 export function setTheme(theme) {
   const root = document.documentElement;
   if (theme === 'dark') {
     root.classList.add('dark');
+    root.classList.remove('light');
     localStorage.setItem('plotway_theme', 'dark');
   } else {
+    root.classList.add('light');
     root.classList.remove('dark');
     localStorage.setItem('plotway_theme', 'light');
   }
@@ -366,4 +368,5 @@ export function initTheme() {
   const currentTheme = getStoredTheme();
   setTheme(currentTheme);
 }
+
 
