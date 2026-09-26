@@ -5,11 +5,9 @@ export async function renderMore() {
   return `
     <div class="page-padding">
       <div style="text-align: center; padding: 32px 0;">
-        <div style="width: 64px; height: 64px; border-radius: 16px; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); display: flex; align-items: center; justify-content: center; margin: 0 auto 12px;">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-        </div>
+        <img src="./assets/icon.png" alt="Plotway Logo" style="width: 72px; height: 72px; border-radius: 18px; object-fit: cover; margin: 0 auto 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.3);">
         <h2 style="font-size: 20px; font-weight: 700;">Plotway</h2>
-        <p style="font-size: 13px; color: var(--text-tertiary);">Property Inventory Manager</p>
+        <p style="font-size: 13px; color: var(--text-tertiary);">Private Land & Property Inventory</p>
         <p style="font-size: 12px; color: var(--text-tertiary); margin-top: 4px;">Version 1.0.0</p>
       </div>
 

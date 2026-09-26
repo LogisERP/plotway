@@ -9,6 +9,10 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>Plotway</title>
 
+  <!-- App Icons -->
+  <link rel="icon" type="image/png" href="./favicon.png">
+  <link rel="apple-touch-icon" href="./assets/icon.png">
+
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -31,8 +35,12 @@
             <ion-icon name="arrow-back-outline" slot="icon-only"></ion-icon>
           </ion-button>
         </ion-buttons>
-        <ion-title id="header-title">Plotway</ion-title>
+        <div class="header-brand-container" style="display: flex; align-items: center; gap: 8px;">
+          <img src="./assets/icon.png" alt="Plotway" style="width: 28px; height: 28px; border-radius: 6px; object-fit: cover; margin-left: 12px;">
+          <ion-title id="header-title" style="padding-left: 0; padding-inline-start: 0;">Plotway</ion-title>
+        </div>
         <ion-buttons slot="end">
+
           <ion-button id="header-search-btn" aria-label="Search">
             <ion-icon name="search-outline" slot="icon-only"></ion-icon>
           </ion-button>
