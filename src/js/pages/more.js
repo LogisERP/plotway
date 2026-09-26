@@ -15,16 +15,28 @@ export async function renderMore() {
 
       <!-- Navigation Items -->
       <div style="margin-top: 8px;">
+        <div class="list-item" onclick="location.hash='/settings'" id="nav-settings">
+          <div class="list-item-avatar" style="background: rgba(37,99,235,0.15); color: var(--primary);">
+            <ion-icon name="settings-outline" style="font-size: 22px;"></ion-icon>
+          </div>
+          <div class="list-item-content">
+            <div class="list-item-title">Settings</div>
+            <div class="list-item-subtitle">Theme, profile & backup data</div>
+          </div>
+          <ion-icon name="chevron-forward-outline" style="color: var(--text-tertiary); font-size: 18px;"></ion-icon>
+        </div>
+
         <div class="list-item" onclick="location.hash='/site-visits'" id="nav-site-visits">
           <div class="list-item-avatar" style="background: rgba(6,182,212,0.15); color: #22d3ee;">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg>
+            <ion-icon name="calendar-outline" style="font-size: 22px;"></ion-icon>
           </div>
           <div class="list-item-content">
             <div class="list-item-title">Site Visits</div>
             <div class="list-item-subtitle">Manage property visits</div>
           </div>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-tertiary)" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+          <ion-icon name="chevron-forward-outline" style="color: var(--text-tertiary); font-size: 18px;"></ion-icon>
         </div>
+
 
         <div class="list-item" onclick="location.hash='/inventory'" id="nav-all-properties">
           <div class="list-item-avatar" style="background: rgba(59,130,246,0.15); color: #60a5fa;">

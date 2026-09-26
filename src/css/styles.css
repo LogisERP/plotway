@@ -4,6 +4,8 @@
    ======================================== */
 
 /* ── CSS Custom Properties ── */
+
+/* ── Light Mode (Default) ── */
 :root {
   /* Brand Colors */
   --primary: #2563eb;
@@ -36,23 +38,23 @@
   --info-light: #e0e7ff;
   --info-dark: #4f46e5;
 
-  /* Neutrals */
-  --bg-primary: #0f172a;
-  --bg-secondary: #1e293b;
-  --bg-tertiary: #334155;
-  --bg-card: #1e293b;
-  --bg-elevated: #253349;
-  --bg-input: #1e293b;
-  --bg-hover: #334155;
+  /* Neutrals (Light Mode Default) */
+  --bg-primary: #f8fafc;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #f1f5f9;
+  --bg-card: #ffffff;
+  --bg-elevated: #ffffff;
+  --bg-input: #ffffff;
+  --bg-hover: #f1f5f9;
 
-  --text-primary: #f1f5f9;
-  --text-secondary: #94a3b8;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
   --text-tertiary: #64748b;
-  --text-inverse: #0f172a;
+  --text-inverse: #ffffff;
 
-  --border-color: #334155;
-  --border-light: #475569;
-  --divider: rgba(148, 163, 184, 0.12);
+  --border-color: #e2e8f0;
+  --border-light: #cbd5e1;
+  --divider: rgba(226, 232, 240, 0.9);
 
   /* Spacing */
   --space-xs: 4px;
@@ -83,11 +85,11 @@
   --radius-full: 9999px;
 
   /* Shadows */
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
-  --shadow-md: 0 4px 12px rgba(0,0,0,0.3);
-  --shadow-lg: 0 8px 24px rgba(0,0,0,0.35);
-  --shadow-xl: 0 16px 48px rgba(0,0,0,0.4);
-  --shadow-glow: 0 0 20px rgba(37,99,235,0.3);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+  --shadow-xl: 0 16px 48px rgba(0,0,0,0.16);
+  --shadow-glow: 0 0 20px rgba(37,99,235,0.2);
 
   /* Layout */
   --header-height: 56px;
@@ -101,7 +103,53 @@
   --transition-slow: 350ms ease;
   --transition-spring: 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
 
-  /* Ionic Theme Overrides */
+  /* Ionic Theme (Light Mode Default) */
+  --ion-color-primary: #2563eb;
+  --ion-color-primary-rgb: 37, 99, 235;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #1d4ed8;
+  --ion-color-primary-tint: #3b82f6;
+
+  --ion-background-color: #f8fafc;
+  --ion-background-color-rgb: 248, 250, 252;
+  --ion-text-color: #0f172a;
+  --ion-text-color-rgb: 15, 23, 42;
+
+  --ion-item-background: #ffffff;
+  --ion-card-background: #ffffff;
+  --ion-toolbar-background: #ffffff;
+  --ion-tab-bar-background: #ffffff;
+  --ion-tab-bar-border-color: #e2e8f0;
+  --ion-toolbar-color: #0f172a;
+  --ion-tab-bar-color-selected: #2563eb;
+  --ion-tab-bar-color: #64748b;
+  --ion-font-family: 'Inter', -apple-system, sans-serif;
+}
+
+/* ── Dark Mode ── */
+html.dark {
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --bg-tertiary: #334155;
+  --bg-card: #1e293b;
+  --bg-elevated: #253349;
+  --bg-input: #1e293b;
+  --bg-hover: #334155;
+
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-tertiary: #64748b;
+  --text-inverse: #0f172a;
+
+  --border-color: #334155;
+  --border-light: #475569;
+  --divider: rgba(148, 163, 184, 0.12);
+
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.3);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.35);
+
   --ion-color-primary: #3b82f6;
   --ion-color-primary-rgb: 59, 130, 246;
   --ion-color-primary-contrast: #ffffff;
@@ -121,8 +169,9 @@
   --ion-tab-bar-border-color: rgba(148, 163, 184, 0.12);
   --ion-toolbar-color: #f1f5f9;
   --ion-tab-bar-color-selected: #3b82f6;
-  --ion-font-family: 'Inter', -apple-system, sans-serif;
+  --ion-tab-bar-color: #94a3b8;
 }
+
 
 
 

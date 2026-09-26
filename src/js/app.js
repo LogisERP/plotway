@@ -19,13 +19,17 @@ import { renderBuyers, initBuyers } from './pages/buyers.js';
 import { renderLeads, initLeads } from './pages/leads.js';
 import { renderSiteVisits, initSiteVisits } from './pages/site-visits.js';
 import { renderMore, initMore } from './pages/more.js';
+import { renderSettings, initSettings } from './pages/settings.js';
 import { searchProperties, getBuyers } from './services/firestore.js';
-import { debounce, formatPrice, getStatusBadge } from './utils.js';
+import { debounce, formatPrice, getStatusBadge, initTheme } from './utils.js';
 import { PROPERTY_TYPES, PROPERTY_STATUSES, LAND_UNITS } from './utils.js';
 
 
 // ── App Initialization ──
 async function initApp() {
+  // Initialize Theme (Default Light mode, restore user preference if saved)
+  initTheme();
+
   // Show loading state
   const content = document.getElementById('app-content');
   content.innerHTML = `
@@ -100,6 +104,10 @@ function setupRoutes() {
     .on('/more', async () => {
       const html = await renderMore();
       return html;
+    })
+    .on('/settings', async () => {
+      const html = await renderSettings();
+      return html;
     });
 
   // Route lifecycle
@@ -136,6 +144,8 @@ function initPageHandlers(path, params) {
       initSiteVisits();
     } else if (path === '/more') {
       initMore();
+    } else if (path === '/settings') {
+      initSettings();
     }
   });
 }
@@ -155,8 +165,10 @@ function updateHeader(path) {
     '/buyers': 'Buyers',
     '/leads': 'Leads',
     '/site-visits': 'Site Visits',
-    '/more': 'More'
+    '/more': 'More',
+    '/settings': 'Settings'
   };
+
 
   // Handle detail/edit pages
   let pageTitle = titles[path];

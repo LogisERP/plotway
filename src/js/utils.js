@@ -343,3 +343,27 @@ export const FACING_OPTIONS = [
   'South-East',
   'South-West'
 ];
+
+/**
+ * Theme Management (Light mode default, Dark mode optional)
+ */
+export function getStoredTheme() {
+  return localStorage.getItem('plotway_theme') || 'light';
+}
+
+export function setTheme(theme) {
+  const root = document.documentElement;
+  if (theme === 'dark') {
+    root.classList.add('dark');
+    localStorage.setItem('plotway_theme', 'dark');
+  } else {
+    root.classList.remove('dark');
+    localStorage.setItem('plotway_theme', 'light');
+  }
+}
+
+export function initTheme() {
+  const currentTheme = getStoredTheme();
+  setTheme(currentTheme);
+}
+
