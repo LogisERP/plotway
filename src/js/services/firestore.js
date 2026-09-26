@@ -20,15 +20,16 @@ const COLLECTIONS = {
 
 // ── Property Code Generator ──
 async function generatePropertyCode() {
-  const q = query(
-    collection(db, COLLECTIONS.PROPERTIES),
-    orderBy('createdAt', 'desc'),
-    limit(1)
-  );
-  const snap = await getDocs(q);
+  const snap = await getDocs(collection(db, COLLECTIONS.PROPERTIES));
   let nextNum = 1;
   if (!snap.empty) {
-    const lastCode = snap.docs[0].data().propertyCode || 'PROP-0000';
+    const properties = snap.docs.map(d => d.data());
+    properties.sort((a, b) => {
+      let tA = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : 0;
+      let tB = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : 0;
+      return tB - tA;
+    });
+    const lastCode = properties[0]?.propertyCode || 'PROP-0000';
     const num = parseInt(lastCode.replace('PROP-', ''), 10);
     if (!isNaN(num)) nextNum = num + 1;
   }
@@ -70,47 +71,81 @@ export async function deleteProperty(id) {
 }
 
 export async function getProperties(filters = {}, sortField = 'createdAt', sortDir = 'desc', pageSize = 50) {
-  let q = collection(db, COLLECTIONS.PROPERTIES);
-  const constraints = [];
+  try {
+    const snap = await getDocs(collection(db, COLLECTIONS.PROPERTIES));
+    let properties = snap.docs.map(d => ({ id: d.id, ...d.data() }));
 
-  if (filters.status && filters.status !== 'All') {
-    constraints.push(where('status', '==', filters.status));
-  }
-  if (filters.propertyType) {
-    constraints.push(where('propertyType', '==', filters.propertyType));
-  }
-  if (filters.district) {
-    constraints.push(where('location.district', '==', filters.district));
-  }
-  if (filters.taluk) {
-    constraints.push(where('location.taluk', '==', filters.taluk));
-  }
-  if (filters.village) {
-    constraints.push(where('location.village', '==', filters.village));
-  }
+    // Apply JS filters
+    if (filters.status && filters.status !== 'All') {
+      properties = properties.filter(p => p.status === filters.status);
+    }
+    if (filters.propertyType) {
+      properties = properties.filter(p => p.propertyType === filters.propertyType);
+    }
+    if (filters.district) {
+      properties = properties.filter(p => p.location?.district === filters.district);
+    }
+    if (filters.taluk) {
+      properties = properties.filter(p => p.location?.taluk === filters.taluk);
+    }
+    if (filters.village) {
+      properties = properties.filter(p => p.location?.village === filters.village);
+    }
+    if (filters.minSize) {
+      properties = properties.filter(p => (parseFloat(p.landDetails?.landSize) || 0) >= parseFloat(filters.minSize));
+    }
+    if (filters.maxSize) {
+      properties = properties.filter(p => (parseFloat(p.landDetails?.landSize) || 0) <= parseFloat(filters.maxSize));
+    }
+    if (filters.minBudget) {
+      properties = properties.filter(p => (parseFloat(p.price?.expectedPrice) || 0) >= parseFloat(filters.minBudget));
+    }
+    if (filters.maxBudget) {
+      properties = properties.filter(p => (parseFloat(p.price?.expectedPrice) || 0) <= parseFloat(filters.maxBudget));
+    }
 
-  constraints.push(orderBy(sortField, sortDir));
-  constraints.push(limit(pageSize));
+    // Apply JS sorting
+    properties.sort((a, b) => {
+      let valA = a[sortField];
+      let valB = b[sortField];
 
-  const queryRef = query(q, ...constraints);
-  const snap = await getDocs(queryRef);
-  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      if (valA && typeof valA.toDate === 'function') valA = valA.toDate().getTime();
+      if (valB && typeof valB.toDate === 'function') valB = valB.toDate().getTime();
+
+      if (valA == null) valA = 0;
+      if (valB == null) valB = 0;
+
+      if (valA < valB) return sortDir === 'asc' ? -1 : 1;
+      if (valA > valB) return sortDir === 'asc' ? 1 : -1;
+      return 0;
+    });
+
+    return properties.slice(0, pageSize);
+  } catch (err) {
+    console.error('getProperties error:', err);
+    return [];
+  }
 }
 
 export function subscribeProperties(callback, filters = {}) {
-  let constraints = [];
-
-  if (filters.status && filters.status !== 'All') {
-    constraints.push(where('status', '==', filters.status));
-  }
-
-  constraints.push(orderBy('createdAt', 'desc'));
-  constraints.push(limit(100));
-
-  const q = query(collection(db, COLLECTIONS.PROPERTIES), ...constraints);
+  const q = collection(db, COLLECTIONS.PROPERTIES);
   return onSnapshot(q, (snap) => {
-    const properties = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    callback(properties);
+    let properties = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+    if (filters.status && filters.status !== 'All') {
+      properties = properties.filter(p => p.status === filters.status);
+    }
+    if (filters.propertyType) {
+      properties = properties.filter(p => p.propertyType === filters.propertyType);
+    }
+
+    properties.sort((a, b) => {
+      let tA = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : 0;
+      let tB = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : 0;
+      return tB - tA;
+    });
+
+    callback(properties.slice(0, 100));
   }, (error) => {
     console.error('Properties subscription error:', error);
   });
@@ -145,14 +180,16 @@ export async function getPropertyStats() {
 }
 
 export async function getRecentProperties(count = 5) {
-  const q = query(
-    collection(db, COLLECTIONS.PROPERTIES),
-    orderBy('createdAt', 'desc'),
-    limit(count)
-  );
-  const snap = await getDocs(q);
-  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  const snap = await getDocs(collection(db, COLLECTIONS.PROPERTIES));
+  const properties = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  properties.sort((a, b) => {
+    let tA = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : 0;
+    let tB = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : 0;
+    return tB - tA;
+  });
+  return properties.slice(0, count);
 }
+
 
 export async function searchProperties(searchTerm) {
   // Client-side search — Firestore doesn't support full-text search
@@ -217,9 +254,19 @@ export async function deleteBuyer(id) {
 }
 
 export async function getBuyers() {
-  const q = query(collection(db, COLLECTIONS.BUYERS), orderBy('createdAt', 'desc'));
-  const snap = await getDocs(q);
-  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  try {
+    const snap = await getDocs(collection(db, COLLECTIONS.BUYERS));
+    const buyers = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    buyers.sort((a, b) => {
+      let tA = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : 0;
+      let tB = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : 0;
+      return tB - tA;
+    });
+    return buyers;
+  } catch (err) {
+    console.error('getBuyers error:', err);
+    return [];
+  }
 }
 
 
@@ -244,18 +291,22 @@ export async function getBuyerRequirement(id) {
 }
 
 export async function getBuyerRequirements(buyerId = null) {
-  let q;
-  if (buyerId) {
-    q = query(
-      collection(db, COLLECTIONS.BUYER_REQUIREMENTS),
-      where('buyerId', '==', buyerId),
-      orderBy('createdAt', 'desc')
-    );
-  } else {
-    q = query(collection(db, COLLECTIONS.BUYER_REQUIREMENTS), orderBy('createdAt', 'desc'));
+  try {
+    const snap = await getDocs(collection(db, COLLECTIONS.BUYER_REQUIREMENTS));
+    let reqs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    if (buyerId) {
+      reqs = reqs.filter(r => r.buyerId === buyerId);
+    }
+    reqs.sort((a, b) => {
+      let tA = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : 0;
+      let tB = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : 0;
+      return tB - tA;
+    });
+    return reqs;
+  } catch (err) {
+    console.error('getBuyerRequirements error:', err);
+    return [];
   }
-  const snap = await getDocs(q);
-  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
 }
 
 export async function updateBuyerRequirement(id, data) {
@@ -275,25 +326,27 @@ export async function deleteBuyerRequirement(id) {
 // ══════════════════════════════════
 
 export async function findMatchingProperties(requirement) {
-  // Get all available properties
-  const q = query(
-    collection(db, COLLECTIONS.PROPERTIES),
-    where('status', '==', 'Available'),
-    orderBy('createdAt', 'desc')
-  );
-  const snap = await getDocs(q);
-  const properties = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  try {
+    // Get all available properties
+    const snap = await getDocs(collection(db, COLLECTIONS.PROPERTIES));
+    const properties = snap.docs
+      .map(d => ({ id: d.id, ...d.data() }))
+      .filter(p => p.status === 'Available' || !p.status);
 
-  // Score each property
-  const matches = properties.map(prop => {
-    const score = calculateMatchScore(requirement, prop);
-    return { ...prop, matchScore: score };
-  });
+    // Score each property
+    const matches = properties.map(prop => {
+      const score = calculateMatchScore(requirement, prop);
+      return { ...prop, matchScore: score };
+    });
 
-  // Filter and sort by score
-  return matches
-    .filter(m => m.matchScore.total > 0)
-    .sort((a, b) => b.matchScore.total - a.matchScore.total);
+    // Filter and sort by score
+    return matches
+      .filter(m => m.matchScore.total > 0)
+      .sort((a, b) => b.matchScore.total - a.matchScore.total);
+  } catch (err) {
+    console.error('findMatchingProperties error:', err);
+    return [];
+  }
 }
 
 function calculateMatchScore(requirement, property) {
@@ -413,9 +466,19 @@ export async function getLead(id) {
 }
 
 export async function getLeads() {
-  const q = query(collection(db, COLLECTIONS.LEADS), orderBy('createdAt', 'desc'));
-  const snap = await getDocs(q);
-  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  try {
+    const snap = await getDocs(collection(db, COLLECTIONS.LEADS));
+    const leads = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    leads.sort((a, b) => {
+      let tA = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : 0;
+      let tB = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : 0;
+      return tB - tA;
+    });
+    return leads;
+  } catch (err) {
+    console.error('getLeads error:', err);
+    return [];
+  }
 }
 
 export async function updateLead(id, data) {
@@ -452,22 +515,28 @@ export async function getSiteVisit(id) {
 }
 
 export async function getSiteVisits() {
-  const q = query(collection(db, COLLECTIONS.SITE_VISITS), orderBy('date', 'desc'));
-  const snap = await getDocs(q);
-  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  try {
+    const snap = await getDocs(collection(db, COLLECTIONS.SITE_VISITS));
+    const visits = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    visits.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+    return visits;
+  } catch (err) {
+    console.error('getSiteVisits error:', err);
+    return [];
+  }
 }
 
 export async function getUpcomingSiteVisits(count = 5) {
-  const now = new Date();
-  const todayStr = now.toISOString().split('T')[0];
-  const q = query(
-    collection(db, COLLECTIONS.SITE_VISITS),
-    where('status', '==', 'Scheduled'),
-    orderBy('date', 'asc'),
-    limit(count)
-  );
-  const snap = await getDocs(q);
-  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  try {
+    const snap = await getDocs(collection(db, COLLECTIONS.SITE_VISITS));
+    let visits = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    visits = visits.filter(v => v.status === 'Scheduled');
+    visits.sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+    return visits.slice(0, count);
+  } catch (err) {
+    console.error('getUpcomingSiteVisits error:', err);
+    return [];
+  }
 }
 
 export async function updateSiteVisit(id, data) {
@@ -482,3 +551,4 @@ export async function deleteSiteVisit(id) {
 }
 
 export { COLLECTIONS };
+

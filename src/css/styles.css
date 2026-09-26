@@ -220,7 +220,28 @@ ion-content::part(scroll)::-webkit-scrollbar {
 
 
 /* ── App Header ── */
+#app-header ion-toolbar {
+  --padding-start: 8px;
+  --padding-end: 8px;
+  --min-height: 56px;
+  --border-width: 0 0 1px 0;
+  --border-color: var(--divider);
+}
+
+#header-title {
+  padding-inline-start: 16px;
+  padding-left: 16px;
+  font-size: var(--font-lg);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+ion-buttons ion-button.hidden {
+  display: none !important;
+}
+
 .app-header {
+
   position: fixed;
   top: 0;
   left: 0;
