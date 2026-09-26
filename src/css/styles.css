@@ -100,7 +100,30 @@
   --transition-base: 250ms ease;
   --transition-slow: 350ms ease;
   --transition-spring: 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* Ionic Theme Overrides */
+  --ion-color-primary: #3b82f6;
+  --ion-color-primary-rgb: 59, 130, 246;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #2563eb;
+  --ion-color-primary-tint: #60a5fa;
+
+  --ion-background-color: #0f172a;
+  --ion-background-color-rgb: 15, 23, 42;
+  --ion-text-color: #f1f5f9;
+  --ion-text-color-rgb: 241, 245, 249;
+
+  --ion-item-background: #1e293b;
+  --ion-card-background: #1e293b;
+  --ion-toolbar-background: #1e293b;
+  --ion-tab-bar-background: #1e293b;
+  --ion-tab-bar-border-color: rgba(148, 163, 184, 0.12);
+  --ion-toolbar-color: #f1f5f9;
+  --ion-tab-bar-color-selected: #3b82f6;
+  --ion-font-family: 'Inter', -apple-system, sans-serif;
 }
+
 
 
 /* ── Reset & Base ── */

@@ -1,4 +1,13 @@
 // Plotway — Main Application Entry Point
+import '@ionic/core/css/ionic.bundle.css';
+import { defineCustomElements } from '@ionic/core/loader';
+import { addIcons } from 'ionicons';
+import * as icons from 'ionicons/icons';
+
+// Initialize Ionic custom elements and IonIcons
+defineCustomElements(window);
+addIcons(icons);
+
 import { initAuth } from './firebase.js';
 import router from './router.js';
 import { renderDashboard, initDashboard } from './pages/dashboard.js';
@@ -13,6 +22,7 @@ import { renderMore, initMore } from './pages/more.js';
 import { searchProperties, getBuyers } from './services/firestore.js';
 import { debounce, formatPrice, getStatusBadge } from './utils.js';
 import { PROPERTY_TYPES, PROPERTY_STATUSES, LAND_UNITS } from './utils.js';
+
 
 // ── App Initialization ──
 async function initApp() {
